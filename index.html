@@ -121,6 +121,25 @@
       white-space: nowrap;
     }
 
+    .filter-toggle {
+      cursor: pointer;
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .filter-toggle input {
+      accent-color: #6c3dff;
+      margin: 0;
+    }
+
+    .filter-toggle.off {
+      opacity: 0.35;
+      text-decoration: line-through;
+    }
+
+    .filter-toggle:hover {
+      transform: translateY(-1px);
+    }
+
     .dot {
       width: 12px;
       height: 12px;
@@ -137,6 +156,12 @@
     .dot.ecom-adult { background: var(--ecom-adult-accent); }
     .dot.protected { background: #777; }
     .dot.avoid { background: #d69b00; }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
 
     button {
       border: none;
@@ -401,23 +426,64 @@
     </div>
 
     <div class="calendar-tools">
-      <div class="legend">
-        <div class="legend-item"><span class="dot dtd-young"></span> DTD · Mujeres 20–30</div>
-        <div class="legend-item"><span class="dot dtd-adult"></span> DTD · Mujeres 31–45</div>
-        <div class="legend-item"><span class="dot derma-women"></span> Derma · Mujeres</div>
-        <div class="legend-item"><span class="dot derma-men"></span> Derma · Hombres</div>
-        <div class="legend-item"><span class="dot ecom-young"></span> E-commerce · Mixta 20–30</div>
-        <div class="legend-item"><span class="dot ecom-adult"></span> E-commerce · Mixta 31–45</div>
-        <div class="legend-item"><span class="dot protected"></span> Horario protegido</div>
-        <div class="legend-item"><span class="dot avoid"></span> Evitar horario</div>
+      <div class="legend filter-panel">
+        <label class="legend-item filter-toggle">
+          <input type="checkbox" data-target="dtd-young" checked>
+          <span class="dot dtd-young"></span>
+          DTD · Mujeres 20–30
+        </label>
+
+        <label class="legend-item filter-toggle">
+          <input type="checkbox" data-target="dtd-adult" checked>
+          <span class="dot dtd-adult"></span>
+          DTD · Mujeres 31–45
+        </label>
+
+        <label class="legend-item filter-toggle">
+          <input type="checkbox" data-target="derma-women" checked>
+          <span class="dot derma-women"></span>
+          Derma · Mujeres
+        </label>
+
+        <label class="legend-item filter-toggle">
+          <input type="checkbox" data-target="derma-men" checked>
+          <span class="dot derma-men"></span>
+          Derma · Hombres
+        </label>
+
+        <label class="legend-item filter-toggle">
+          <input type="checkbox" data-target="ecom-young" checked>
+          <span class="dot ecom-young"></span>
+          E-commerce · Mixta 20–30
+        </label>
+
+        <label class="legend-item filter-toggle">
+          <input type="checkbox" data-target="ecom-adult" checked>
+          <span class="dot ecom-adult"></span>
+          E-commerce · Mixta 31–45
+        </label>
+
+        <div class="legend-item">
+          <span class="dot protected"></span>
+          Horario protegido
+        </div>
+
+        <div class="legend-item">
+          <span class="dot avoid"></span>
+          Evitar horario
+        </div>
       </div>
 
-      <button onclick="resetCalendar()">Restaurar calendario</button>
+      <div class="actions">
+        <button onclick="showAllTargets()">Mostrar todos</button>
+        <button onclick="hideAllTargets()">Ocultar todos</button>
+        <button onclick="resetCalendar()">Restaurar calendario</button>
+      </div>
     </div>
 
     <div class="hint">
-      Puedes arrastrar cada bloque para moverlo de horario o mercado. La hora local se recalcula automáticamente según el país. 
-      Los cambios se guardan sólo en este navegador.
+      Puedes prender/apagar targets desde los filtros superiores. También puedes arrastrar cada bloque para moverlo de horario o mercado.
+      La hora local se recalcula automáticamente según el país. Los cambios se guardan sólo en este navegador.
     </div>
   </section>
 
@@ -802,7 +868,18 @@
     };
 
     const storageKey = "calendario-campo-todas-fechas-v1";
+    const filterStorageKey = "calendario-campo-filtros-target-v1";
 
+    const allTargets = [
+      "dtd-young",
+      "dtd-adult",
+      "derma-women",
+      "derma-men",
+      "ecom-young",
+      "ecom-adult"
+    ];
+
+    let activeTargets = loadActiveTargets();
     let eventsByCalendar = loadEvents();
 
     function loadEvents() {
@@ -820,9 +897,83 @@
       localStorage.setItem(storageKey, JSON.stringify(eventsByCalendar));
     }
 
+    function loadActiveTargets() {
+      const saved = localStorage.getItem(filterStorageKey);
+      if (!saved) return [...allTargets];
+
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return [...allTargets];
+      }
+    }
+
+    function saveActiveTargets() {
+      localStorage.setItem(filterStorageKey, JSON.stringify(activeTargets));
+    }
+
+    function setupTargetFilters() {
+      const checkboxes = document.querySelectorAll("[data-target]");
+
+      checkboxes.forEach(checkbox => {
+        const target = checkbox.dataset.target;
+        checkbox.checked = activeTargets.includes(target);
+
+        const parent = checkbox.closest(".filter-toggle");
+        if (parent) {
+          parent.classList.toggle("off", !checkbox.checked);
+        }
+
+        checkbox.addEventListener("change", () => {
+          if (checkbox.checked) {
+            if (!activeTargets.includes(target)) {
+              activeTargets.push(target);
+            }
+          } else {
+            activeTargets = activeTargets.filter(item => item !== target);
+          }
+
+          updateFilterUI();
+          saveActiveTargets();
+          renderAllCalendars();
+        });
+      });
+    }
+
+    function updateFilterUI() {
+      const checkboxes = document.querySelectorAll("[data-target]");
+
+      checkboxes.forEach(checkbox => {
+        const target = checkbox.dataset.target;
+        checkbox.checked = activeTargets.includes(target);
+
+        const parent = checkbox.closest(".filter-toggle");
+        if (parent) {
+          parent.classList.toggle("off", !checkbox.checked);
+        }
+      });
+    }
+
+    function showAllTargets() {
+      activeTargets = [...allTargets];
+      saveActiveTargets();
+      updateFilterUI();
+      renderAllCalendars();
+    }
+
+    function hideAllTargets() {
+      activeTargets = [];
+      saveActiveTargets();
+      updateFilterUI();
+      renderAllCalendars();
+    }
+
     function resetCalendar() {
       localStorage.removeItem(storageKey);
+      localStorage.removeItem(filterStorageKey);
       eventsByCalendar = structuredClone(defaultEvents);
+      activeTargets = [...allTargets];
+      updateFilterUI();
       renderAllCalendars();
     }
 
@@ -973,6 +1124,10 @@
 
     function renderEvents(calendarId, calendarGrid) {
       eventsByCalendar[calendarId].forEach(eventData => {
+        if (!activeTargets.includes(eventData.profileClass)) {
+          return;
+        }
+
         const event = document.createElement("div");
         event.className = `event ${eventData.profileClass}${eventData.conflict ? " conflict" : ""}`;
         event.draggable = true;
@@ -1047,6 +1202,7 @@
       renderAllCalendars();
     }
 
+    setupTargetFilters();
     renderAllCalendars();
   </script>
 
