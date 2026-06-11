@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Calendario de campo · 29 y 30 de junio</title>
+  <title>Calendario de campo</title>
 
   <style>
     :root {
-      --time-col: 92px;
+      --time-col: 94px;
       --header-row: 50px;
       --row-height: 28px;
       --border: #e5e5ec;
@@ -37,6 +37,17 @@
       --ecom-adult-bg: #ffe3dc;
       --ecom-adult-text: #8a2b16;
       --ecom-adult-accent: #ff6b4a;
+
+      --protected-bg: rgba(35, 35, 45, 0.08);
+      --protected-border: rgba(35, 35, 45, 0.18);
+
+      --holiday-bg: rgba(0, 0, 0, 0.09);
+      --holiday-border: rgba(0, 0, 0, 0.18);
+
+      --avoid-bg: rgba(255, 220, 120, 0.35);
+      --avoid-border: rgba(180, 120, 0, 0.35);
+
+      --conflict: #e02020;
     }
 
     * {
@@ -52,7 +63,7 @@
     }
 
     .calendar-shell {
-      max-width: 1440px;
+      max-width: 1460px;
       margin: 0 auto 34px auto;
       background: white;
       border-radius: 24px;
@@ -115,6 +126,7 @@
       height: 12px;
       border-radius: 50%;
       display: inline-block;
+      flex: 0 0 12px;
     }
 
     .dot.dtd-young { background: var(--dtd-young-accent); }
@@ -123,6 +135,8 @@
     .dot.derma-men { background: var(--derma-men-accent); }
     .dot.ecom-young { background: var(--ecom-young-accent); }
     .dot.ecom-adult { background: var(--ecom-adult-accent); }
+    .dot.protected { background: #777; }
+    .dot.avoid { background: #d69b00; }
 
     button {
       border: none;
@@ -147,6 +161,7 @@
       border-right: 1px solid var(--border);
       font-size: 13px;
       color: var(--muted);
+      line-height: 1.45;
     }
 
     .calendar-grid {
@@ -213,6 +228,52 @@
       border-top: 1px solid #d8d8e0;
     }
 
+    .slot.holiday {
+      background: var(--holiday-bg);
+    }
+
+    .slot.protected {
+      background: var(--protected-bg);
+    }
+
+    .slot.avoid {
+      background: var(--avoid-bg);
+    }
+
+    .protected-overlay {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8px;
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1.2;
+      z-index: 2;
+      pointer-events: none;
+      border: 1px dashed;
+      border-radius: 12px;
+      margin: 4px 6px;
+    }
+
+    .protected-overlay.holiday {
+      background: rgba(0, 0, 0, 0.08);
+      border-color: var(--holiday-border);
+      color: #333;
+    }
+
+    .protected-overlay.protected {
+      background: rgba(35, 35, 45, 0.08);
+      border-color: var(--protected-border);
+      color: #333;
+    }
+
+    .protected-overlay.avoid {
+      background: rgba(255, 220, 120, 0.42);
+      border-color: var(--avoid-border);
+      color: #7a5200;
+    }
+
     .event {
       margin: 3px 5px;
       padding: 7px 8px;
@@ -234,6 +295,21 @@
     .event.dragging {
       opacity: 0.55;
       transform: scale(0.98);
+    }
+
+    .event.conflict {
+      outline: 3px solid var(--conflict);
+      outline-offset: -2px;
+    }
+
+    .event .conflict-note {
+      margin-top: 4px;
+      padding: 3px 5px;
+      border-radius: 6px;
+      background: rgba(224, 32, 32, 0.12);
+      color: #b00000;
+      font-weight: 900;
+      font-size: 10px;
     }
 
     .event .cdmx-time {
@@ -321,7 +397,7 @@
   <section class="calendar-shell">
     <div class="calendar-title">
       <h1>Calendario de campo</h1>
-      <p>29 y 30 de junio · Eje en hora CDMX / México + hora local por país · Duración: 1 hora por sesión</p>
+      <p>29 y 30 de junio · 6 y 7 de julio · Eje en hora CDMX / México + hora local por país · Duración: 1 hora</p>
     </div>
 
     <div class="calendar-tools">
@@ -332,32 +408,49 @@
         <div class="legend-item"><span class="dot derma-men"></span> Derma · Hombres</div>
         <div class="legend-item"><span class="dot ecom-young"></span> E-commerce · Mixta 20–30</div>
         <div class="legend-item"><span class="dot ecom-adult"></span> E-commerce · Mixta 31–45</div>
+        <div class="legend-item"><span class="dot protected"></span> Horario protegido</div>
+        <div class="legend-item"><span class="dot avoid"></span> Evitar horario</div>
       </div>
 
       <button onclick="resetCalendar()">Restaurar calendario</button>
     </div>
 
     <div class="hint">
-      Puedes arrastrar cada bloque para moverlo de horario o de mercado. La hora local se recalcula automáticamente según el país. Los cambios se guardan en este navegador.
+      Puedes arrastrar cada bloque para moverlo de horario o mercado. La hora local se recalcula automáticamente según el país. 
+      Los cambios se guardan sólo en este navegador.
     </div>
   </section>
 
   <section class="calendar-shell">
     <div class="calendar-title">
       <h1>29 de junio</h1>
-      <p>Sesiones definidas según matriz compartida</p>
+      <p>Feriado en Colombia, Perú y Chile. Proteger esos países, con excepción de Colombia Door To Door 2:30–3:30pm CDMX.</p>
     </div>
-
     <div class="calendar-grid" id="calendar-29"></div>
   </section>
 
   <section class="calendar-shell">
     <div class="calendar-title">
       <h1>30 de junio</h1>
-      <p>Sesiones definidas según matriz compartida</p>
+      <p>Proteger 11:20am–1:00pm CDMX. La sesión Colombia Derma 11:00am queda marcada como conflicto por cruzar el bloque protegido.</p>
     </div>
-
     <div class="calendar-grid" id="calendar-30"></div>
+  </section>
+
+  <section class="calendar-shell">
+    <div class="calendar-title">
+      <h1>6 de julio</h1>
+      <p>Sólo Door To Door · países y rangos faltantes.</p>
+    </div>
+    <div class="calendar-grid" id="calendar-06"></div>
+  </section>
+
+  <section class="calendar-shell">
+    <div class="calendar-title">
+      <h1>7 de julio</h1>
+      <p>Sólo Door To Door · evitar sesión a las 2:00pm CDMX.</p>
+    </div>
+    <div class="calendar-grid" id="calendar-07"></div>
   </section>
 
   <script>
@@ -518,7 +611,8 @@
           profileClass: "derma-women",
           study: "Derma",
           type: "Triada Online",
-          profile: "Mujeres 25–45"
+          profile: "Mujeres 25–45",
+          conflict: "Cruza horario protegido 11:20am–1:00pm"
         },
         {
           id: "30-peru-dtd-20-30",
@@ -610,10 +704,104 @@
           type: "Dupla Online",
           profile: "Hombres 25–45"
         }
+      ],
+
+      "calendar-06": [
+        {
+          id: "06-colombia-dtd-20-30",
+          market: "Colombia",
+          start: "14:30",
+          duration: 60,
+          profileClass: "dtd-young",
+          study: "Door To Door",
+          type: "Triada Online",
+          profile: "Mujeres 20–30 · Sin hijos · Vida OOH"
+        },
+        {
+          id: "06-mexico-dtd-31-45",
+          market: "México",
+          start: "16:00",
+          duration: 60,
+          profileClass: "dtd-adult",
+          study: "Door To Door",
+          type: "Triada Online",
+          profile: "Mujeres 31–45 · Mix de rutinas"
+        }
+      ],
+
+      "calendar-07": [
+        {
+          id: "07-brasil-dtd-20-30",
+          market: "Brasil",
+          start: "9:30",
+          duration: 60,
+          profileClass: "dtd-young",
+          study: "Door To Door",
+          type: "Triada Online",
+          profile: "Mujeres 20–30 · Sin hijos · Vida OOH"
+        },
+        {
+          id: "07-peru-dtd-31-45",
+          market: "Perú",
+          start: "12:00",
+          duration: 60,
+          profileClass: "dtd-adult",
+          study: "Door To Door",
+          type: "Triada Online",
+          profile: "Mujeres 31–45 · Mix de rutinas"
+        }
       ]
     };
 
-    const storageKey = "calendario-campo-definido-1hora";
+    const protectedOverlays = {
+      "calendar-29": [
+        {
+          market: "Colombia",
+          start: "7:30",
+          duration: 630,
+          label: "Feriado · No agendar<br>Excepción: DTD 2:30–3:30pm",
+          className: "holiday"
+        },
+        {
+          market: "Perú",
+          start: "7:30",
+          duration: 630,
+          label: "Feriado · No agendar",
+          className: "holiday"
+        },
+        {
+          market: "Chile",
+          start: "7:30",
+          duration: 630,
+          label: "Feriado · No agendar",
+          className: "holiday"
+        }
+      ],
+
+      "calendar-30": [
+        {
+          market: "all",
+          start: "11:15",
+          duration: 105,
+          label: "Horario protegido<br>11:20am–1:00pm CDMX",
+          className: "protected"
+        }
+      ],
+
+      "calendar-06": [],
+
+      "calendar-07": [
+        {
+          market: "all",
+          start: "14:00",
+          duration: 60,
+          label: "Evitar sesión<br>2:00pm CDMX",
+          className: "avoid"
+        }
+      ]
+    };
+
+    const storageKey = "calendario-campo-todas-fechas-v1";
 
     let eventsByCalendar = loadEvents();
 
@@ -684,6 +872,36 @@
       return duration / 15;
     }
 
+    function isProtectedSlot(calendarId, market, time) {
+      const minutes = timeToMinutes(time);
+
+      if (calendarId === "calendar-29") {
+        const holidayCountries = ["Colombia", "Perú", "Chile"];
+        const allowedColombia =
+          market === "Colombia" &&
+          minutes >= timeToMinutes("14:30") &&
+          minutes < timeToMinutes("15:30");
+
+        if (holidayCountries.includes(market) && !allowedColombia) {
+          return "holiday";
+        }
+      }
+
+      if (calendarId === "calendar-30") {
+        if (minutes >= timeToMinutes("11:15") && minutes < timeToMinutes("13:00")) {
+          return "protected";
+        }
+      }
+
+      if (calendarId === "calendar-07") {
+        if (minutes >= timeToMinutes("14:00") && minutes < timeToMinutes("15:00")) {
+          return "avoid";
+        }
+      }
+
+      return "";
+    }
+
     function renderCalendar(calendarId) {
       const calendarGrid = document.getElementById(calendarId);
       calendarGrid.innerHTML = "";
@@ -716,10 +934,13 @@
 
         markets.forEach((market, marketIndex) => {
           const slot = document.createElement("div");
+          const protectedClass = isProtectedSlot(calendarId, market, time);
+
           slot.className =
             "slot" +
             (index % 2 === 1 ? " alt" : "") +
-            (isHour ? " hour" : "");
+            (isHour ? " hour" : "") +
+            (protectedClass ? " " + protectedClass : "");
 
           slot.style.gridColumn = marketIndex + 2;
           slot.style.gridRow = row;
@@ -727,9 +948,33 @@
         });
       });
 
+      renderProtectedOverlays(calendarId, calendarGrid);
+      renderEvents(calendarId, calendarGrid);
+    }
+
+    function renderProtectedOverlays(calendarId, calendarGrid) {
+      const overlays = protectedOverlays[calendarId] || [];
+
+      overlays.forEach(overlay => {
+        const div = document.createElement("div");
+        div.className = `protected-overlay ${overlay.className}`;
+        div.innerHTML = overlay.label;
+
+        if (overlay.market === "all") {
+          div.style.gridColumn = "2 / span 5";
+        } else {
+          div.style.gridColumn = marketToColumn(overlay.market);
+        }
+
+        div.style.gridRow = `${startToRow(overlay.start)} / span ${durationToSpan(overlay.duration)}`;
+        calendarGrid.appendChild(div);
+      });
+    }
+
+    function renderEvents(calendarId, calendarGrid) {
       eventsByCalendar[calendarId].forEach(eventData => {
         const event = document.createElement("div");
-        event.className = `event ${eventData.profileClass}`;
+        event.className = `event ${eventData.profileClass}${eventData.conflict ? " conflict" : ""}`;
         event.draggable = true;
         event.dataset.id = eventData.id;
         event.dataset.calendarId = calendarId;
@@ -745,6 +990,7 @@
           <div class="study">${eventData.study}</div>
           <div class="type">${eventData.type}</div>
           <div class="profile">${eventData.profile}</div>
+          ${eventData.conflict ? `<div class="conflict-note">⚠ ${eventData.conflict}</div>` : ""}
         `;
 
         event.addEventListener("dragstart", handleDragStart);
@@ -757,6 +1003,8 @@
     function renderAllCalendars() {
       renderCalendar("calendar-29");
       renderCalendar("calendar-30");
+      renderCalendar("calendar-06");
+      renderCalendar("calendar-07");
     }
 
     function handleDragStart(e) {
