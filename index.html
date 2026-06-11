@@ -37,9 +37,6 @@
       --ecom-adult-bg: #ffe3dc;
       --ecom-adult-text: #8a2b16;
       --ecom-adult-accent: #ff6b4a;
-
-      --protected-bg: #f4f1ff;
-      --protected-line: #d8cffb;
     }
 
     * {
@@ -55,7 +52,7 @@
     }
 
     .calendar-shell {
-      max-width: 1420px;
+      max-width: 1440px;
       margin: 0 auto 34px auto;
       background: white;
       border-radius: 24px;
@@ -155,7 +152,7 @@
     .calendar-grid {
       display: grid;
       grid-template-columns: var(--time-col) repeat(5, minmax(180px, 1fr));
-      grid-template-rows: var(--header-row) repeat(36, var(--row-height));
+      grid-template-rows: var(--header-row) repeat(42, var(--row-height));
       border: 1px solid var(--border);
       border-top: none;
       position: relative;
@@ -214,26 +211,6 @@
 
     .slot.hour {
       border-top: 1px solid #d8d8e0;
-    }
-
-    .slot.protected {
-      background: var(--protected-bg);
-      border-bottom-color: var(--protected-line);
-    }
-
-    .protected-label {
-      grid-column: 2 / span 5;
-      background: rgba(247, 245, 255, 0.82);
-      border-top: 1px solid var(--protected-line);
-      border-bottom: 1px solid var(--protected-line);
-      color: #4c348f;
-      font-size: 12px;
-      font-weight: 900;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 2;
-      pointer-events: none;
     }
 
     .event {
@@ -344,49 +321,31 @@
   <section class="calendar-shell">
     <div class="calendar-title">
       <h1>Calendario de campo</h1>
-      <p>29 y 30 de junio · Vista tipo Outlook · Eje en hora CDMX + hora local por país</p>
+      <p>29 y 30 de junio · Eje en hora CDMX / México + hora local por país · Duración: 1 hora por sesión</p>
     </div>
 
     <div class="calendar-tools">
       <div class="legend">
-        <div class="legend-item">
-          <span class="dot dtd-young"></span>
-          DTD · Mujeres 20–30
-        </div>
-        <div class="legend-item">
-          <span class="dot dtd-adult"></span>
-          DTD · Mujeres 31–45
-        </div>
-        <div class="legend-item">
-          <span class="dot derma-women"></span>
-          Derma · Mujeres
-        </div>
-        <div class="legend-item">
-          <span class="dot derma-men"></span>
-          Derma · Hombres
-        </div>
-        <div class="legend-item">
-          <span class="dot ecom-young"></span>
-          E-commerce · Mixta 20–30
-        </div>
-        <div class="legend-item">
-          <span class="dot ecom-adult"></span>
-          E-commerce · Mixta 31–45
-        </div>
+        <div class="legend-item"><span class="dot dtd-young"></span> DTD · Mujeres 20–30</div>
+        <div class="legend-item"><span class="dot dtd-adult"></span> DTD · Mujeres 31–45</div>
+        <div class="legend-item"><span class="dot derma-women"></span> Derma · Mujeres</div>
+        <div class="legend-item"><span class="dot derma-men"></span> Derma · Hombres</div>
+        <div class="legend-item"><span class="dot ecom-young"></span> E-commerce · Mixta 20–30</div>
+        <div class="legend-item"><span class="dot ecom-adult"></span> E-commerce · Mixta 31–45</div>
       </div>
 
       <button onclick="resetCalendar()">Restaurar calendario</button>
     </div>
 
     <div class="hint">
-      Puedes arrastrar cada bloque para moverlo de horario o de mercado. El bloque recalcula automáticamente la hora local según el país. Los cambios se guardan en este navegador.
+      Puedes arrastrar cada bloque para moverlo de horario o de mercado. La hora local se recalcula automáticamente según el país. Los cambios se guardan en este navegador.
     </div>
   </section>
 
   <section class="calendar-shell">
     <div class="calendar-title">
-      <h1>Lunes 29 de junio</h1>
-      <p>10 actividades · Única actividad en país feriado: Colombia Door To Door 2:30–3:30pm CDMX</p>
+      <h1>29 de junio</h1>
+      <p>Sesiones definidas según matriz compartida</p>
     </div>
 
     <div class="calendar-grid" id="calendar-29"></div>
@@ -394,18 +353,18 @@
 
   <section class="calendar-shell">
     <div class="calendar-title">
-      <h1>Martes 30 de junio</h1>
-      <p>12 actividades · Sin actividades entre 11:20am y 1:00pm CDMX · Nada termina después de 6:00pm local</p>
+      <h1>30 de junio</h1>
+      <p>Sesiones definidas según matriz compartida</p>
     </div>
 
     <div class="calendar-grid" id="calendar-30"></div>
   </section>
 
   <script>
-    const markets = ["CDMX", "Brasil", "Colombia", "Perú", "Chile"];
+    const markets = ["México", "Colombia", "Perú", "Brasil", "Chile"];
 
     const localOffsetFromCDMX = {
-      "CDMX": 0,
+      "México": 0,
       "Colombia": 1,
       "Perú": 1,
       "Chile": 2,
@@ -413,6 +372,8 @@
     };
 
     const timeSlots = [
+      "7:30", "7:45",
+      "8:00", "8:15", "8:30", "8:45",
       "9:00", "9:15", "9:30", "9:45",
       "10:00", "10:15", "10:30", "10:45",
       "11:00", "11:15", "11:30", "11:45",
@@ -427,59 +388,19 @@
     const defaultEvents = {
       "calendar-29": [
         {
-          id: "29-cdmx-dtd-20-30",
-          market: "CDMX",
+          id: "29-mexico-derma-women-20-45",
+          market: "México",
           start: "9:00",
           duration: 60,
-          profileClass: "dtd-young",
-          study: "Door To Door",
+          profileClass: "derma-women",
+          study: "Derma",
           type: "Triada Online",
-          profile: "Mujeres 20–30 · Sin hijos · Vida OOH"
-        },
-        {
-          id: "29-brasil-derma-women-20-45",
-          market: "Brasil",
-          start: "9:00",
-          duration: 60,
-          profileClass: "derma-women",
-          study: "Derma",
-          type: "Dupla o Triada Online",
-          profile: "Mujeres 20–45"
-        },
-        {
-          id: "29-cdmx-derma-men",
-          market: "CDMX",
-          start: "10:15",
-          duration: 60,
-          profileClass: "derma-men",
-          study: "Derma",
-          type: "Dupla Online",
-          profile: "Hombres 25–45"
-        },
-        {
-          id: "29-brasil-derma-men",
-          market: "Brasil",
-          start: "10:15",
-          duration: 60,
-          profileClass: "derma-men",
-          study: "Derma",
-          type: "Dupla Online",
-          profile: "Hombres 25–45"
-        },
-        {
-          id: "29-cdmx-derma-women-20-45",
-          market: "CDMX",
-          start: "11:30",
-          duration: 60,
-          profileClass: "derma-women",
-          study: "Derma",
-          type: "Dupla o Triada Online",
           profile: "Mujeres 20–45"
         },
         {
           id: "29-brasil-dtd-31-45",
           market: "Brasil",
-          start: "11:30",
+          start: "9:30",
           duration: 60,
           profileClass: "dtd-adult",
           study: "Door To Door",
@@ -487,19 +408,39 @@
           profile: "Mujeres 31–45 · Mix de rutinas"
         },
         {
-          id: "29-brasil-ecom-20-30",
-          market: "Brasil",
-          start: "13:00",
+          id: "29-mexico-derma-women-25-45",
+          market: "México",
+          start: "12:00",
           duration: 60,
-          profileClass: "ecom-young",
-          study: "E-commerce Beauty",
+          profileClass: "derma-women",
+          study: "Derma",
           type: "Triada Online",
-          profile: "Mixta 20–30"
+          profile: "Mujeres 25–45"
         },
         {
-          id: "29-colombia-dtd-20-30",
+          id: "29-colombia-dtd-31-45",
           market: "Colombia",
           start: "14:30",
+          duration: 60,
+          profileClass: "dtd-adult",
+          study: "Door To Door",
+          type: "Triada Online",
+          profile: "Mujeres 31–45 · Mix de rutinas"
+        },
+        {
+          id: "29-brasil-derma-women-20-45",
+          market: "Brasil",
+          start: "15:00",
+          duration: 60,
+          profileClass: "derma-women",
+          study: "Derma",
+          type: "Triada Online",
+          profile: "Mujeres 20–45"
+        },
+        {
+          id: "29-mexico-dtd-20-30",
+          market: "México",
+          start: "16:00",
           duration: 60,
           profileClass: "dtd-young",
           study: "Door To Door",
@@ -507,31 +448,61 @@
           profile: "Mujeres 20–30 · Sin hijos · Vida OOH"
         },
         {
-          id: "29-cdmx-ecom-20-30",
-          market: "CDMX",
-          start: "14:30",
+          id: "29-mexico-derma-men",
+          market: "México",
+          start: "17:00",
           duration: 60,
-          profileClass: "ecom-young",
-          study: "E-commerce Beauty",
-          type: "Triada Online",
-          profile: "Mixta 20–30"
+          profileClass: "derma-men",
+          study: "Derma",
+          type: "Dupla Online",
+          profile: "Hombres 25–45"
         },
         {
-          id: "29-cdmx-ecom-31-45",
-          market: "CDMX",
-          start: "16:45",
+          id: "29-brasil-derma-women-25-45",
+          market: "Brasil",
+          start: "17:00",
           duration: 60,
-          profileClass: "ecom-adult",
-          study: "E-commerce Beauty",
+          profileClass: "derma-women",
+          study: "Derma",
           type: "Triada Online",
-          profile: "Mixta 31–45"
+          profile: "Mujeres 25–45"
         }
       ],
 
       "calendar-30": [
         {
+          id: "30-peru-derma-men",
+          market: "Perú",
+          start: "7:30",
+          duration: 60,
+          profileClass: "derma-men",
+          study: "Derma",
+          type: "Dupla Online",
+          profile: "Hombres 25–45"
+        },
+        {
           id: "30-colombia-derma-women-20-45",
           market: "Colombia",
+          start: "8:00",
+          duration: 60,
+          profileClass: "derma-women",
+          study: "Derma",
+          type: "Triada Online",
+          profile: "Mujeres 20–45"
+        },
+        {
+          id: "30-brasil-derma-men",
+          market: "Brasil",
+          start: "8:30",
+          duration: 60,
+          profileClass: "derma-men",
+          study: "Derma",
+          type: "Dupla Online",
+          profile: "Hombres 25–45"
+        },
+        {
+          id: "30-peru-derma-women-20-45",
+          market: "Perú",
           start: "9:00",
           duration: 60,
           profileClass: "derma-women",
@@ -540,19 +511,9 @@
           profile: "Mujeres 20–45"
         },
         {
-          id: "30-peru-derma-men",
-          market: "Perú",
-          start: "9:00",
-          duration: 60,
-          profileClass: "derma-men",
-          study: "Derma",
-          type: "Dupla Online",
-          profile: "Hombres 25–45"
-        },
-        {
-          id: "30-brasil-derma-women-25-45",
-          market: "Brasil",
-          start: "9:00",
+          id: "30-colombia-derma-women-25-45",
+          market: "Colombia",
+          start: "11:00",
           duration: 60,
           profileClass: "derma-women",
           study: "Derma",
@@ -560,9 +521,79 @@
           profile: "Mujeres 25–45"
         },
         {
-          id: "30-cdmx-derma-women-25-45",
-          market: "CDMX",
-          start: "9:00",
+          id: "30-peru-dtd-20-30",
+          market: "Perú",
+          start: "13:00",
+          duration: 60,
+          profileClass: "dtd-young",
+          study: "Door To Door",
+          type: "Triada Online",
+          profile: "Mujeres 20–30 · Sin hijos · Vida OOH"
+        },
+        {
+          id: "30-chile-ecom-20-30",
+          market: "Chile",
+          start: "13:00",
+          duration: 60,
+          profileClass: "ecom-young",
+          study: "Shoppers Belleza E-commerce",
+          type: "Triada Online",
+          profile: "Mixta 20–30"
+        },
+        {
+          id: "30-mexico-ecom-20-30",
+          market: "México",
+          start: "14:00",
+          duration: 60,
+          profileClass: "ecom-young",
+          study: "Shoppers Belleza E-commerce",
+          type: "Triada Online",
+          profile: "Mixta 20–30"
+        },
+        {
+          id: "30-brasil-ecom-20-30",
+          market: "Brasil",
+          start: "14:00",
+          duration: 60,
+          profileClass: "ecom-young",
+          study: "Shoppers Belleza E-commerce",
+          type: "Triada Online",
+          profile: "Mixta 20–30"
+        },
+        {
+          id: "30-chile-ecom-31-45",
+          market: "Chile",
+          start: "15:00",
+          duration: 60,
+          profileClass: "ecom-adult",
+          study: "Shoppers Belleza E-commerce",
+          type: "Triada Online",
+          profile: "Mixta 31–45"
+        },
+        {
+          id: "30-mexico-ecom-31-45",
+          market: "México",
+          start: "16:00",
+          duration: 60,
+          profileClass: "ecom-adult",
+          study: "Shoppers Belleza E-commerce",
+          type: "Triada Online",
+          profile: "Mixta 31–45"
+        },
+        {
+          id: "30-brasil-ecom-31-45",
+          market: "Brasil",
+          start: "16:00",
+          duration: 60,
+          profileClass: "ecom-adult",
+          study: "Shoppers Belleza E-commerce",
+          type: "Triada Online",
+          profile: "Mixta 31–45"
+        },
+        {
+          id: "30-peru-derma-women-25-45",
+          market: "Perú",
+          start: "16:30",
           duration: 60,
           profileClass: "derma-women",
           study: "Derma",
@@ -572,87 +603,17 @@
         {
           id: "30-colombia-derma-men",
           market: "Colombia",
-          start: "10:15",
+          start: "17:00",
           duration: 60,
           profileClass: "derma-men",
           study: "Derma",
           type: "Dupla Online",
           profile: "Hombres 25–45"
-        },
-        {
-          id: "30-peru-derma-women-25-45",
-          market: "Perú",
-          start: "10:15",
-          duration: 60,
-          profileClass: "derma-women",
-          study: "Derma",
-          type: "Triada Online",
-          profile: "Mujeres 25–45"
-        },
-        {
-          id: "30-colombia-derma-women-25-45",
-          market: "Colombia",
-          start: "13:00",
-          duration: 60,
-          profileClass: "derma-women",
-          study: "Derma",
-          type: "Triada Online",
-          profile: "Mujeres 25–45"
-        },
-        {
-          id: "30-peru-derma-women-20-45",
-          market: "Perú",
-          start: "13:00",
-          duration: 60,
-          profileClass: "derma-women",
-          study: "Derma",
-          type: "Dupla o Triada Online",
-          profile: "Mujeres 20–45"
-        },
-        {
-          id: "30-chile-ecom-20-30",
-          market: "Chile",
-          start: "13:00",
-          duration: 60,
-          profileClass: "ecom-young",
-          study: "E-commerce Beauty",
-          type: "Triada Online",
-          profile: "Mixta 20–30"
-        },
-        {
-          id: "30-brasil-ecom-31-45",
-          market: "Brasil",
-          start: "14:00",
-          duration: 60,
-          profileClass: "ecom-adult",
-          study: "E-commerce Beauty",
-          type: "Triada Online",
-          profile: "Mixta 31–45"
-        },
-        {
-          id: "30-peru-dtd-31-45",
-          market: "Perú",
-          start: "14:15",
-          duration: 60,
-          profileClass: "dtd-adult",
-          study: "Door To Door",
-          type: "Triada Online",
-          profile: "Mujeres 31–45 · Mix de rutinas"
-        },
-        {
-          id: "30-chile-ecom-31-45",
-          market: "Chile",
-          start: "14:15",
-          duration: 60,
-          profileClass: "ecom-adult",
-          study: "E-commerce Beauty",
-          type: "Triada Online",
-          profile: "Mixta 31–45"
         }
       ]
     };
 
-    const storageKey = "calendario-campo-29-30-junio-cdmx-local";
+    const storageKey = "calendario-campo-definido-1hora";
 
     let eventsByCalendar = loadEvents();
 
@@ -702,18 +663,17 @@
     function getTimeRange(start, duration, offsetHours = 0) {
       const startMinutes = timeToMinutes(start) + offsetHours * 60;
       const endMinutes = startMinutes + duration;
-
       return `${minutesToTime(startMinutes)}–${minutesToTime(endMinutes)}`;
     }
 
     function startToRow(start) {
-      const base = timeToMinutes("9:00");
+      const base = timeToMinutes("7:30");
       const current = timeToMinutes(start);
       return ((current - base) / 15) + 2;
     }
 
     function rowToStart(row) {
-      const base = timeToMinutes("9:00");
+      const base = timeToMinutes("7:30");
       const minutes = base + (row - 2) * 15;
       const hour = Math.floor(minutes / 60);
       const minute = minutes % 60;
@@ -746,7 +706,6 @@
         const row = index + 2;
         const isHour = time.endsWith(":00");
         const minutes = timeToMinutes(time);
-        const isProtected = calendarId === "calendar-30" && minutes >= timeToMinutes("11:30") && minutes < timeToMinutes("13:00");
 
         const label = document.createElement("div");
         label.className = "time-label";
@@ -760,22 +719,13 @@
           slot.className =
             "slot" +
             (index % 2 === 1 ? " alt" : "") +
-            (isHour ? " hour" : "") +
-            (isProtected ? " protected" : "");
+            (isHour ? " hour" : "");
 
           slot.style.gridColumn = marketIndex + 2;
           slot.style.gridRow = row;
           calendarGrid.appendChild(slot);
         });
       });
-
-      if (calendarId === "calendar-30") {
-        const protectedLabel = document.createElement("div");
-        protectedLabel.className = "protected-label";
-        protectedLabel.style.gridRow = "12 / span 6";
-        protectedLabel.textContent = "Bloque protegido · 11:20am–1:00pm CDMX";
-        calendarGrid.appendChild(protectedLabel);
-      }
 
       eventsByCalendar[calendarId].forEach(eventData => {
         const event = document.createElement("div");
@@ -836,7 +786,7 @@
       columnIndex = Math.max(0, Math.min(markets.length - 1, columnIndex));
 
       let row = Math.round((y - headerHeight) / rowHeight) + 2;
-      row = Math.max(2, Math.min(37, row));
+      row = Math.max(2, Math.min(43, row));
 
       const eventData = eventsByCalendar[calendarId].find(event => event.id === id);
       if (!eventData) return;
