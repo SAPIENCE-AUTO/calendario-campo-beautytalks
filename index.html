@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Calendario de campo · 29 y 30 de junio</title>
+
+  <style>
+    :root {
+      --time-col: 92px;
+      --header-row: 50px;
+      --row-height: 28px;
+      --border: #e5e5ec;
+      --text: #1f1f1f;
+      --muted: #6f6f7a;
+
+      --dtd-young-bg: #ece6ff;
+      --dtd-young-text: #32127c;
+      --dtd-young-accent: #7b4dff;
+
+      --dtd-adult-bg: #ffe7f0;
+      --dtd-adult-text: #86123e;
+      --dtd-adult-accent: #ff5f9c;
+
+      --derma-women-bg: #ddf7ef;
+      --derma-women-text: #006b4f;
+      --derma-women-accent: #00a884;
+
+      --derma-men-bg: #e0f0ff;
+      --derma-men-text: #00528a;
+      --derma-men-accent: #1f91ff;
+
+      --ecom-young-bg: #fff0d6;
+      --ecom-young-text: #8a5200;
+      --ecom-young-accent: #ffad33;
+
+      --ecom-adult-bg: #ffe3dc;
+      --ecom-adult-text: #8a2b16;
+      --ecom-adult-accent: #ff6b4a;
+
+      --protected-bg: #f4f1ff;
+      --protected-line: #d8cffb;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 32px;
+      background: #f0f0f4;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+    }
+
+    .calendar-shell {
+      max-width: 1420px;
+      margin: 0 auto 34px auto;
+      background: white;
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 18px 45px rgba(21, 17, 61, 0.16);
+    }
+
+    .calendar-title {
+      padding: 26px 30px;
+      background: linear-gradient(135deg, #2f1f75, #6c3dff);
+      color: white;
+    }
+
+    .calendar-title h1 {
+      margin: 0;
+      font-size: 30px;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+    }
+
+    .calendar-title p {
+      margin: 8px 0 0;
+      font-size: 15px;
+      opacity: 0.92;
+    }
+
+    .calendar-tools {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      flex-wrap: wrap;
+      padding: 16px 22px;
+      background: #f7f5ff;
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+    }
+
+    .legend {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: white;
+      border: 1px solid #e2def4;
+      border-radius: 999px;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .dot.dtd-young { background: var(--dtd-young-accent); }
+    .dot.dtd-adult { background: var(--dtd-adult-accent); }
+    .dot.derma-women { background: var(--derma-women-accent); }
+    .dot.derma-men { background: var(--derma-men-accent); }
+    .dot.ecom-young { background: var(--ecom-young-accent); }
+    .dot.ecom-adult { background: var(--ecom-adult-accent); }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 9px 14px;
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      background: white;
+      color: #3b247f;
+      border: 1px solid #ded7ff;
+    }
+
+    button:hover {
+      background: #f0ebff;
+    }
+
+    .hint {
+      padding: 10px 24px;
+      background: #fff;
+      border-left: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: var(--time-col) repeat(5, minmax(180px, 1fr));
+      grid-template-rows: var(--header-row) repeat(36, var(--row-height));
+      border: 1px solid var(--border);
+      border-top: none;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .corner {
+      grid-column: 1;
+      grid-row: 1;
+      background: #f3f3f7;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 900;
+      color: #777;
+    }
+
+    .market-header {
+      background: #f3f3f7;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .time-label {
+      background: #fafafa;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid #eeeeee;
+      font-size: 11px;
+      font-weight: 800;
+      color: #666;
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-end;
+      padding: 6px 9px 0 0;
+    }
+
+    .slot {
+      border-right: 1px solid #eeeeee;
+      border-bottom: 1px solid #eeeeee;
+      background: white;
+    }
+
+    .slot.alt {
+      background: #fcfcfd;
+    }
+
+    .slot.hour {
+      border-top: 1px solid #d8d8e0;
+    }
+
+    .slot.protected {
+      background: var(--protected-bg);
+      border-bottom-color: var(--protected-line);
+    }
+
+    .protected-label {
+      grid-column: 2 / span 5;
+      background: rgba(247, 245, 255, 0.82);
+      border-top: 1px solid var(--protected-line);
+      border-bottom: 1px solid var(--protected-line);
+      color: #4c348f;
+      font-size: 12px;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .event {
+      margin: 3px 5px;
+      padding: 7px 8px;
+      border-radius: 11px;
+      font-size: 11px;
+      line-height: 1.15;
+      overflow: hidden;
+      box-shadow: 0 5px 12px rgba(0, 0, 0, 0.10);
+      z-index: 5;
+      cursor: grab;
+      user-select: none;
+      border-left: 6px solid;
+    }
+
+    .event:active {
+      cursor: grabbing;
+    }
+
+    .event.dragging {
+      opacity: 0.55;
+      transform: scale(0.98);
+    }
+
+    .event .cdmx-time {
+      font-weight: 950;
+      font-size: 12px;
+      margin-bottom: 2px;
+    }
+
+    .event .local-time {
+      font-size: 11px;
+      font-weight: 800;
+      opacity: 0.88;
+      margin-bottom: 5px;
+    }
+
+    .event .study {
+      font-weight: 950;
+      margin-bottom: 2px;
+    }
+
+    .event .type {
+      font-weight: 800;
+      opacity: 0.9;
+    }
+
+    .event .profile {
+      margin-top: 3px;
+    }
+
+    .event.dtd-young {
+      background: var(--dtd-young-bg);
+      color: var(--dtd-young-text);
+      border-left-color: var(--dtd-young-accent);
+    }
+
+    .event.dtd-adult {
+      background: var(--dtd-adult-bg);
+      color: var(--dtd-adult-text);
+      border-left-color: var(--dtd-adult-accent);
+    }
+
+    .event.derma-women {
+      background: var(--derma-women-bg);
+      color: var(--derma-women-text);
+      border-left-color: var(--derma-women-accent);
+    }
+
+    .event.derma-men {
+      background: var(--derma-men-bg);
+      color: var(--derma-men-text);
+      border-left-color: var(--derma-men-accent);
+    }
+
+    .event.ecom-young {
+      background: var(--ecom-young-bg);
+      color: var(--ecom-young-text);
+      border-left-color: var(--ecom-young-accent);
+    }
+
+    .event.ecom-adult {
+      background: var(--ecom-adult-bg);
+      color: var(--ecom-adult-text);
+      border-left-color: var(--ecom-adult-accent);
+    }
+
+    @media (max-width: 1050px) {
+      body {
+        padding: 16px;
+      }
+
+      .calendar-grid {
+        overflow-x: auto;
+        grid-template-columns: var(--time-col) repeat(5, 220px);
+      }
+
+      .calendar-shell {
+        border-radius: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <section class="calendar-shell">
+    <div class="calendar-title">
+      <h1>Calendario de campo</h1>
+      <p>29 y 30 de junio · Vista tipo Outlook · Eje en hora CDMX + hora local por país</p>
+    </div>
+
+    <div class="calendar-tools">
+      <div class="legend">
+        <div class="legend-item">
+          <span class="dot dtd-young"></span>
+          DTD · Mujeres 20–30
+        </div>
+        <div class="legend-item">
+          <span class="dot dtd-adult"></span>
+          DTD · Mujeres 31–45
+        </div>
+        <div class="legend-item">
+          <span class="dot derma-women"></span>
+          Derma · Mujeres
+        </div>
+        <div class="legend-item">
+          <span class="dot derma-men"></span>
+          Derma · Hombres
+        </div>
+        <div class="legend-item">
+          <span class="dot ecom-young"></span>
+          E-commerce · Mixta 20–30
+        </div>
+        <div class="legend-item">
+          <span class="dot ecom-adult"></span>
+          E-commerce · Mixta 31–45
+        </div>
+      </div>
+
+      <button onclick="resetCalendar()">Restaurar calendario</button>
+    </div>
+
+    <div class="hint">
+      Puedes arrastrar cada bloque para moverlo de horario o de mercado. El bloque recalcula automáticamente la hora local según el país. Los cambios se guardan en este navegador.
+    </div>
+  </section>
+
+  <section class="calendar-shell">
+    <div class="calendar-title">
+      <h1>Lunes 29 de junio</h1>
+      <p>10 actividades · Única actividad en país feriado: Colombia Door To Door 2:30–3:30pm CDMX</p>
+    </div>
+
+    <div class="calendar-grid" id="calendar-29"></div>
+  </section>
+
+  <section class="calendar-shell">
+    <div class="calendar-title">
+      <h1>Martes 30 de junio</h1>
+      <p>12 actividades · Sin actividades entre 11:20am y 1:00pm CDMX · Nada termina después de 6:00pm local</p>
+    </div>
+
+    <div class="calendar-grid" id="calendar-30"></div>
+  </section>
+
+  <script>
+    const markets = ["CDMX", "Brasil", "Colombia", "Perú", "Chile"];
+
+    const localOffsetFromCDMX = {
+      "CDMX": 0,
+      "Colombia": 1,
+      "Perú": 1,
+      "Chile": 2,
+      "Brasil": 3
+    };
+
+    const timeSlots = [
+      "9:00", "9:15", "9:30", "9:45",
+      "10:00", "10:15", "10:30", "10:45",
+      "11:00", "11:15", "11:30", "11:45",
+      "12:00", "12:15", "12:30", "12:45",
+      "13:00", "13:15", "13:30", "13:45",
+      "14:00", "14:15", "14:30", "14:45",
+      "15:00", "15:15", "15:30", "15:45",
+      "16:00", "16:15", "16:30", "16:45",
+      "17:00", "17:15", "17:30", "17:45"
+    ];
+
+    const defaultEvents = {
+      "calendar-29": [
+        {
+          id: "29-cdmx-dtd-20-30",
+          market: "CDMX",
+          start: "9:00",
+          duration: 60,
+          profileClass: "dtd-young",
+          study: "Door To Door",
+          type: "Triada Online",
+          profile: "Mujeres 20–30 · Sin hijos · Vida OOH"
+        },
+        {
+          id: "29-brasil-derma-women-20-45",
+          market: "Brasil",
+          start: "9:00",
+          duration: 60,
+          profileClass: "derma-women",
+          study: "Derma",
+          type: "Dupla o Triada Online",
+          profile: "Mujeres 20–45"
+        },
+        {
+          id: "29-cdmx-derma-men",
+          market: "CDMX",
+          start: "10:15",
+          duration: 60,
+          profileClass: "derma-men",
+          study: "Derma",
+          type: "Dupla Online",
+          profile: "Hombres 25–45"
+        },
+        {
+          id: "29-brasil-derma-men",
+          market: "Brasil",
+          start: "10:15",
+          duration: 60,
+          profileClass: "derma-men",
+          study: "Derma",
+          type: "Dupla Online",
+          profile: "Hombres 25–45"
+        },
+        {
+          id: "29-cdmx-derma-women-20-45",
+          market: "CDMX",
+          start: "11:30",
+          duration: 60,
+          profileClass: "derma-women",
+          study: "Derma",
+          type: "Dupla o Triada Online",
+          profile: "Mujeres 20–45"
+        },
+        {
+          id: "29-brasil-dtd-31-45",
+          market: "Brasil",
+          start: "11:30",
+          duration: 60,
+          profileClass: "dtd-adult",
+          study: "Door To Door",
+          type: "Triada Online",
+          profile: "Mujeres 31–45 · Mix de rutinas"
+        },
+        {
+          id: "29-brasil-ecom-20-30",
+          market: "Brasil",
+          start: "13:00",
+          duration: 60,
+          profileClass: "ecom-young",
+          study: "E-commerce Beauty",
+          type: "Triada Online",
+          profile: "Mixta 20–30"
+        },
+        {
+          id: "29-colombia-dtd-20-30",
+          market: "Colombia",
+          start: "14:30",
+          duration: 60,
+          profileClass: "dtd-young",
+          study: "Door To Door",
+          type: "Triada Online",
+          profile: "Mujeres 20–30 · Sin hijos · Vida OOH"
+        },
+        {
+          id: "29-cdmx-ecom-20-30",
+          market: "CDMX",
+          start: "14:30",
+          duration: 60,
+          profileClass: "ecom-young",
+          study: "E-commerce Beauty",
+          type: "Triada Online",
+          profile: "Mixta 20–30"
+        },
+        {
+          id: "29-cdmx-ecom-31-45",
+          market: "CDMX",
+          start: "16:45",
+          duration: 60,
+          profileClass: "ecom-adult",
+          study: "E-commerce Beauty",
+          type: "Triada Online",
+          profile: "Mixta 31–45"
+        }
+      ],
+
+      "calendar-30": [
+        {
+          id: "30-colombia-derma-women-20-45",
+          market: "Colombia",
+          start: "9:00",
+          duration: 60,
+          profileClass: "derma-women",
+          study: "Derma",
+          type: "Dupla o Triada Online",
+          profile: "Mujeres 20–45"
+        },
+        {
+          id: "30-peru-derma-men",
+          market: "Perú",
+          start: "9:00",
+          duration: 60,
+          profileClass: "derma-men",
+          study: "Derma",
+          type: "Dupla Online",
+          profile: "Hombres 25–45"
+        },
+        {
+          id: "30-brasil-derma-women-25-45",
+          market: "Brasil",
+          start: "9:00",
+          duration: 60,
+          profileClass: "derma-women",
+          study: "Derma",
+          type: "Triada Online",
+          profile: "Mujeres 25–45"
+        },
+        {
+          id: "30-cdmx-derma-women-25-45",
+          market: "CDMX",
+          start: "9:00",
+          duration: 60,
+          profileClass: "derma-women",
+          study: "Derma",
+          type: "Triada Online",
+          profile: "Mujeres 25–45"
+        },
+        {
+          id: "30-colombia-derma-men",
+          market: "Colombia",
+          start: "10:15",
+          duration: 60,
+          profileClass: "derma-men",
+          study: "Derma",
+          type: "Dupla Online",
+          profile: "Hombres 25–45"
+        },
+        {
+          id: "30-peru-derma-women-25-45",
+          market: "Perú",
+          start: "10:15",
+          duration: 60,
+          profileClass: "derma-women",
+          study: "Derma",
+          type: "Triada Online",
+          profile: "Mujeres 25–45"
+        },
+        {
+          id: "30-colombia-derma-women-25-45",
+          market: "Colombia",
+          start: "13:00",
+          duration: 60,
+          profileClass: "derma-women",
+          study: "Derma",
+          type: "Triada Online",
+          profile: "Mujeres 25–45"
+        },
+        {
+          id: "30-peru-derma-women-20-45",
+          market: "Perú",
+          start: "13:00",
+          duration: 60,
+          profileClass: "derma-women",
+          study: "Derma",
+          type: "Dupla o Triada Online",
+          profile: "Mujeres 20–45"
+        },
+        {
+          id: "30-chile-ecom-20-30",
+          market: "Chile",
+          start: "13:00",
+          duration: 60,
+          profileClass: "ecom-young",
+          study: "E-commerce Beauty",
+          type: "Triada Online",
+          profile: "Mixta 20–30"
+        },
+        {
+          id: "30-brasil-ecom-31-45",
+          market: "Brasil",
+          start: "14:00",
+          duration: 60,
+          profileClass: "ecom-adult",
+          study: "E-commerce Beauty",
+          type: "Triada Online",
+          profile: "Mixta 31–45"
+        },
+        {
+          id: "30-peru-dtd-31-45",
+          market: "Perú",
+          start: "14:15",
+          duration: 60,
+          profileClass: "dtd-adult",
+          study: "Door To Door",
+          type: "Triada Online",
+          profile: "Mujeres 31–45 · Mix de rutinas"
+        },
+        {
+          id: "30-chile-ecom-31-45",
+          market: "Chile",
+          start: "14:15",
+          duration: 60,
+          profileClass: "ecom-adult",
+          study: "E-commerce Beauty",
+          type: "Triada Online",
+          profile: "Mixta 31–45"
+        }
+      ]
+    };
+
+    const storageKey = "calendario-campo-29-30-junio-cdmx-local";
+
+    let eventsByCalendar = loadEvents();
+
+    function loadEvents() {
+      const saved = localStorage.getItem(storageKey);
+      if (!saved) return structuredClone(defaultEvents);
+
+      try {
+        return JSON.parse(saved);
+      } catch {
+        return structuredClone(defaultEvents);
+      }
+    }
+
+    function saveEvents() {
+      localStorage.setItem(storageKey, JSON.stringify(eventsByCalendar));
+    }
+
+    function resetCalendar() {
+      localStorage.removeItem(storageKey);
+      eventsByCalendar = structuredClone(defaultEvents);
+      renderAllCalendars();
+    }
+
+    function marketToColumn(market) {
+      return markets.indexOf(market) + 2;
+    }
+
+    function timeToMinutes(time) {
+      const [hour, minute] = time.split(":").map(Number);
+      return hour * 60 + minute;
+    }
+
+    function minutesToTime(totalMinutes) {
+      let minutes = totalMinutes % (24 * 60);
+      if (minutes < 0) minutes += 24 * 60;
+
+      const hour24 = Math.floor(minutes / 60);
+      const minute = minutes % 60;
+      const suffix = hour24 >= 12 ? "pm" : "am";
+      let hour12 = hour24 % 12;
+      if (hour12 === 0) hour12 = 12;
+
+      return `${hour12}:${minute.toString().padStart(2, "0")}${suffix}`;
+    }
+
+    function getTimeRange(start, duration, offsetHours = 0) {
+      const startMinutes = timeToMinutes(start) + offsetHours * 60;
+      const endMinutes = startMinutes + duration;
+
+      return `${minutesToTime(startMinutes)}–${minutesToTime(endMinutes)}`;
+    }
+
+    function startToRow(start) {
+      const base = timeToMinutes("9:00");
+      const current = timeToMinutes(start);
+      return ((current - base) / 15) + 2;
+    }
+
+    function rowToStart(row) {
+      const base = timeToMinutes("9:00");
+      const minutes = base + (row - 2) * 15;
+      const hour = Math.floor(minutes / 60);
+      const minute = minutes % 60;
+      return `${hour}:${minute.toString().padStart(2, "0")}`;
+    }
+
+    function durationToSpan(duration) {
+      return duration / 15;
+    }
+
+    function renderCalendar(calendarId) {
+      const calendarGrid = document.getElementById(calendarId);
+      calendarGrid.innerHTML = "";
+
+      const corner = document.createElement("div");
+      corner.className = "corner";
+      corner.textContent = "CDMX";
+      calendarGrid.appendChild(corner);
+
+      markets.forEach((market, index) => {
+        const header = document.createElement("div");
+        header.className = "market-header";
+        header.textContent = market;
+        header.style.gridColumn = index + 2;
+        header.style.gridRow = 1;
+        calendarGrid.appendChild(header);
+      });
+
+      timeSlots.forEach((time, index) => {
+        const row = index + 2;
+        const isHour = time.endsWith(":00");
+        const minutes = timeToMinutes(time);
+        const isProtected = calendarId === "calendar-30" && minutes >= timeToMinutes("11:30") && minutes < timeToMinutes("13:00");
+
+        const label = document.createElement("div");
+        label.className = "time-label";
+        label.textContent = isHour ? minutesToTime(minutes).replace(":00", "") : "";
+        label.style.gridColumn = 1;
+        label.style.gridRow = row;
+        calendarGrid.appendChild(label);
+
+        markets.forEach((market, marketIndex) => {
+          const slot = document.createElement("div");
+          slot.className =
+            "slot" +
+            (index % 2 === 1 ? " alt" : "") +
+            (isHour ? " hour" : "") +
+            (isProtected ? " protected" : "");
+
+          slot.style.gridColumn = marketIndex + 2;
+          slot.style.gridRow = row;
+          calendarGrid.appendChild(slot);
+        });
+      });
+
+      if (calendarId === "calendar-30") {
+        const protectedLabel = document.createElement("div");
+        protectedLabel.className = "protected-label";
+        protectedLabel.style.gridRow = "12 / span 6";
+        protectedLabel.textContent = "Bloque protegido · 11:20am–1:00pm CDMX";
+        calendarGrid.appendChild(protectedLabel);
+      }
+
+      eventsByCalendar[calendarId].forEach(eventData => {
+        const event = document.createElement("div");
+        event.className = `event ${eventData.profileClass}`;
+        event.draggable = true;
+        event.dataset.id = eventData.id;
+        event.dataset.calendarId = calendarId;
+        event.style.gridColumn = marketToColumn(eventData.market);
+        event.style.gridRow = `${startToRow(eventData.start)} / span ${durationToSpan(eventData.duration)}`;
+
+        const cdmxRange = getTimeRange(eventData.start, eventData.duration, 0);
+        const localRange = getTimeRange(eventData.start, eventData.duration, localOffsetFromCDMX[eventData.market]);
+
+        event.innerHTML = `
+          <div class="cdmx-time">CDMX: ${cdmxRange}</div>
+          <div class="local-time">Local ${eventData.market}: ${localRange}</div>
+          <div class="study">${eventData.study}</div>
+          <div class="type">${eventData.type}</div>
+          <div class="profile">${eventData.profile}</div>
+        `;
+
+        event.addEventListener("dragstart", handleDragStart);
+        event.addEventListener("dragend", handleDragEnd);
+
+        calendarGrid.appendChild(event);
+      });
+    }
+
+    function renderAllCalendars() {
+      renderCalendar("calendar-29");
+      renderCalendar("calendar-30");
+    }
+
+    function handleDragStart(e) {
+      e.currentTarget.classList.add("dragging");
+      e.dataTransfer.setData("text/plain", e.currentTarget.dataset.id);
+    }
+
+    function handleDragEnd(e) {
+      const eventElement = e.currentTarget;
+      const id = eventElement.dataset.id;
+      const calendarId = eventElement.dataset.calendarId;
+      const calendarGrid = document.getElementById(calendarId);
+      const rect = calendarGrid.getBoundingClientRect();
+
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      const styles = getComputedStyle(document.documentElement);
+      const timeColWidth = parseInt(styles.getPropertyValue("--time-col"));
+      const headerHeight = parseInt(styles.getPropertyValue("--header-row"));
+      const rowHeight = parseInt(styles.getPropertyValue("--row-height"));
+
+      const usableWidth = rect.width - timeColWidth;
+      const colWidth = usableWidth / markets.length;
+
+      let columnIndex = Math.floor((x - timeColWidth) / colWidth);
+      columnIndex = Math.max(0, Math.min(markets.length - 1, columnIndex));
+
+      let row = Math.round((y - headerHeight) / rowHeight) + 2;
+      row = Math.max(2, Math.min(37, row));
+
+      const eventData = eventsByCalendar[calendarId].find(event => event.id === id);
+      if (!eventData) return;
+
+      eventData.market = markets[columnIndex];
+      eventData.start = rowToStart(row);
+
+      eventElement.classList.remove("dragging");
+      saveEvents();
+      renderAllCalendars();
+    }
+
+    renderAllCalendars();
+  </script>
+
+</body>
+</html>
